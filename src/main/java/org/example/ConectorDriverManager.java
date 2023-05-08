@@ -3,7 +3,7 @@ package org.example;
 import java.sql.Connection;
 import java.sql.DriverManager;
 
-public class Conector {
+public class ConectorDriverManager {
 // NO SE USA DRIVERMANAGER SIEMPRE DATASOURCE
     public Connection conectarOracle() {
         Connection conexion = null;
