@@ -1,11 +1,13 @@
 package org.example;
 
 import com.mysql.cj.jdbc.MysqlDataSource;
+import oracle.jdbc.pool.OracleDataSource;
 
 import javax.sql.DataSource;
 import java.io.FileInputStream;
 import java.io.FilterInputStream;
 import java.io.IOException;
+import java.sql.SQLException;
 import java.util.Properties;
 
 public class ConectorDataSource {
@@ -25,5 +27,28 @@ public class ConectorDataSource {
         }
             return  mysqlDataSource;
     }
+
+    public static DataSource getOracleDataSource() {
+        Properties properties = new Properties();
+        OracleDataSource oracleDataSource = null;
+
+        try (FileInputStream fis = new FileInputStream("db.properties")) {
+
+            properties.load(fis);
+            oracleDataSource = new OracleDataSource();
+            oracleDataSource.setURL(properties.getProperty("MYSQL_DB_URL2"));
+            oracleDataSource.setUser(properties.getProperty("MYSQL_DB_USERNMAE2"));
+            oracleDataSource.setPassword(properties.getProperty("MYSQL_DB_PASSWORD2"));
+
+        } catch (IOException e) {
+            e.printStackTrace();
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+
+        return oracleDataSource;
+    }
+
+
 
 }
