@@ -1,4 +1,4 @@
-package org.example;
+package org.example.model;
 
 import com.mysql.cj.jdbc.MysqlDataSource;
 import oracle.jdbc.pool.OracleDataSource;
@@ -11,7 +11,7 @@ import java.sql.SQLException;
 import java.util.Properties;
 
 public class ConectorDataSource {
-
+// esto es lo q conecta a ka bbdd
     public static DataSource getMysSQLDataSource() {
         Properties properties = new Properties();
         MysqlDataSource mysqlDataSource = null;
