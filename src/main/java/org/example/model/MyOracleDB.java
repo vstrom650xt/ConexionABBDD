@@ -48,4 +48,14 @@ public class MyOracleDB implements  AlmacenDatosDB{
     public int deleteEmpleado(Empleado empleado) {
         return 1;
     }
+
+    @Override
+    public Empleado addEmplado(Empleado empleado) {
+        return null;
+    }
+
+    @Override
+    public boolean authenticate(String login, String password) {
+        return false;
+    }
 }

@@ -9,4 +9,7 @@ public ArrayList <Empleado> getEmpleados();
 
  int updateEmpleado(Empleado empleado);
  int deleteEmpleado(Empleado empleado);
+ Empleado addEmplado(Empleado empleado);
+
+ boolean authenticate(String login, String password);
 }

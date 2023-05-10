@@ -1,11 +1,9 @@
 package org.example.model;
 
 import javax.sql.DataSource;
-import java.sql.Connection;
-import java.sql.ResultSet;
-import java.sql.SQLException;
-import java.sql.Statement;
+import java.sql.*;
 import java.util.ArrayList;
+import java.util.List;
 
 public class MySQLDB implements  AlmacenDatosDB{
     @Override
@@ -14,7 +12,7 @@ public class MySQLDB implements  AlmacenDatosDB{
         ArrayList<Empleado> empleados = new ArrayList<>();
         try (Connection con = ds.getConnection();
              Statement statement =  con.createStatement();
-             ResultSet rs = statement.executeQuery("SELECT * FROM empleado");
+             ResultSet rs = statement.executeQuery("SELECT * FROM empleado;")
 
         ){
             Empleado empleado;
@@ -30,6 +28,30 @@ public class MySQLDB implements  AlmacenDatosDB{
             throw new RuntimeException(e);
         }
         return empleados;
+    }
+
+    public Empleado getEmpleadoPorDNIPrepareStatement(String DNI) {
+        DataSource ds = ConectorDataSource.getMysSQLDataSource();
+        Empleado empleado = null ;
+         String query = "SELECT * FROM empleado where DNI=?";
+
+        try (Connection con = ds.getConnection();
+             PreparedStatement ps = con.prepareStatement(query)){
+
+
+            ps.setString(1,DNI); // el 1 hace referencia al primer ?
+            ResultSet rs = ps.executeQuery();
+            while (rs.next()){
+                empleado = new Empleado(rs.getInt("id"), rs.getString("DNI"),rs.getString(3),
+                        rs.getString(4),rs.getString(5),rs.getString(6),rs.getString("email"),
+                        rs.getDate(8),rs.getString(9));
+
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+            throw new RuntimeException(e);
+        }
+        return empleado;
     }
 
     @Override
@@ -71,12 +93,11 @@ public class MySQLDB implements  AlmacenDatosDB{
                     empleado.getFechanacimiento()+"\","+ "cargo=\""+empleado.getCargo()+
                     "\" "+ "WHERE DNI=\"" + empleado.getDNI() +"\"";
 
-            if (statement.executeUpdate(query) == 1) //si solo afecta a una ok
-                statement.executeUpdate(query);
 
-            int i =  statement.executeUpdate(query);
-            if (i == 1)
-                atualizado = true;
+                statement.executeUpdate(query); // ejecuta la query
+
+         //   int i =  statement.executeUpdate(query); // esto devuelve el numero de filas afectadas por la select
+
 
 
             result = statement.executeUpdate(query);
@@ -94,22 +115,62 @@ public class MySQLDB implements  AlmacenDatosDB{
 
     @Override
     public int deleteEmpleado(Empleado empleado) {
-        boolean borrado =  false;
         int result =  0;
         DataSource ds = ConectorDataSource.getMysSQLDataSource();
         try(Connection con = ds.getConnection();
             Statement statement =  con.createStatement()){
-            String queryBefore= "select nombre from empleado where DNI = '"+empleado.getDNI()+"'";
+            String queryBefore= "select * from empleado where DNI='"+empleado.getDNI()+"'";
+            statement.executeQuery(queryBefore); // el updete solo insert delete update  y sino executeQuery
+            System.out.println();
 
 
 
             String query = "DELETE FROM empleado WHERE DNI = '"+empleado.getDNI()+"'";
 
-                statement.executeUpdate(query);
+              result= statement.executeUpdate(query);
 
-        )
+        return result;
 
     } catch (SQLException e) {
             throw new RuntimeException(e);
         }
     }
+// el select count(*) es la mejor forma de comprobar que existe algo en una table
+    @Override
+    public Empleado addEmplado(Empleado empleado) {
+        DataSource ds = ConectorDataSource.getMysSQLDataSource();
+        try(Connection con = ds.getConnection();
+            Statement statement = con.createStatement()) {
+            String query = "INSERT INTO empleado (nombre,DNI) values('"+empleado.getNombre()+"','"+empleado.getDNI()+"')";
+            statement.executeUpdate(query);
+
+
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
+
+        return null;
+    }
+
+    @Override
+    public boolean authenticate(String login, String password) {
+        DataSource ds = ConectorDataSource.getMysSQLDataSource();
+        try(Connection con = ds.getConnection();
+            Statement statement = con.createStatement();
+           ResultSet rs = statement.executeQuery("SELECT COUNT(*) FROM empleado where EMAIL='"+login+"' and password='"+ password+"';");
+
+        ){
+          rs.next();
+          if (rs.getInt(1) !=1)// el rs.getInt se le pasa por parametro la columna que quieres coger
+              return true;
+          else
+              return  false;
+
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+            throw new RuntimeException(e);
+        }
+
+    }
+}
