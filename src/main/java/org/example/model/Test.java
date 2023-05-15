@@ -9,7 +9,7 @@ public class Test {
         mySQLDB.getEmpleados();
         AlmacenDatosDB db = new MySQLDB();
         List<Empleado> empleados = db.getEmpleados();
-      //  System.out.println(empleados);
+   //    System.out.println(empleados);
 
 //        Empleado empleado =  db.getEmpleadoPorDNI("2X");
 //        db.deleteEmpleado(empleado);
@@ -29,7 +29,15 @@ public class Test {
 //        AlmacenDatosDB db2 = new MyOracleDB();
 //        List<Empleado> empleados2 = db2.getEmpleados();
 //        System.out.println(empleados2);
-        System.out.println(db.authenticate("empleado2@empresa.es","1111"));
+   //     System.out.println(db.authenticate("empleado2@empresa.es","1111"));
+        MySQLDB  mySQLDB1=new MySQLDB();
+        //System.out.println(mySQLDB1.getEmpleadoPorDNIPrepareStatement("3X"));
+
+        System.out.println(mySQLDB1.getEmpleadoPorEmail("empleado2@empresa.es"));
+/////////////////ORACLE
+
+
+
 
 
     }

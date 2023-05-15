@@ -78,6 +78,35 @@ public class MySQLDB implements  AlmacenDatosDB{
     }
 
     @Override
+    public Empleado getEmpleadoPorEmail(String email) {
+
+        DataSource ds = ConectorDataSource.getMysSQLDataSource();
+        Empleado empleado = null;
+        String query = "SELECT * FROM empleado where email=?";
+
+        try(Connection con = ds.getConnection();
+            PreparedStatement ps = con.prepareStatement(query)){
+
+            ps.setString(1,email);
+            ResultSet rs = ps.executeQuery();
+            while (rs.next()){
+                empleado = new Empleado(rs.getInt("id"), rs.getString("DNI"),rs.getString(3),
+                        rs.getString(4),rs.getString(5),rs.getString(6),rs.getString("email"),
+                        rs.getDate(8),rs.getString(9));
+
+
+
+            }
+            if (empleado == null)
+                System.out.println("no existe");
+
+        }catch (SQLException e){
+            e.printStackTrace();
+        }
+        return empleado;
+    }
+
+    @Override
     public int updateEmpleado(Empleado empleado) {
 
         // si actuliza 0 retorna false
@@ -136,8 +165,8 @@ public class MySQLDB implements  AlmacenDatosDB{
         }
     }
 // el select count(*) es la mejor forma de comprobar que existe algo en una table
-    @Override
-    public Empleado addEmplado(Empleado empleado) {
+    @Override//esto esta mal
+    public boolean addEmplado(Empleado empleado) {
         DataSource ds = ConectorDataSource.getMysSQLDataSource();
         try(Connection con = ds.getConnection();
             Statement statement = con.createStatement()) {
@@ -149,28 +178,53 @@ public class MySQLDB implements  AlmacenDatosDB{
             throw new RuntimeException(e);
         }
 
-        return null;
+        return true;
     }
+
+//    @Override
+//    public boolean authenticate(String login, String password) {
+//        DataSource ds = ConectorDataSource.getMysSQLDataSource();
+//        try(Connection con = ds.getConnection();
+//            Statement statement = con.createStatement();
+//           ResultSet rs = statement.executeQuery("SELECT COUNT(*) FROM empleado where EMAIL='"+login+"' and password='"+ password+"';");
+//
+//        ){
+//          rs.next();
+//          if (rs.getInt(1) !=1)// el rs.getInt se le pasa por parametro la columna que quieres coger
+//              return true;
+//          else
+//              return  false;
+//
+//
+//        } catch (SQLException e) {
+//            e.printStackTrace();
+//            throw new RuntimeException(e);
+//        }
+//
+//    }
 
     @Override
     public boolean authenticate(String login, String password) {
+        boolean auth = false;
         DataSource ds = ConectorDataSource.getMysSQLDataSource();
-        try(Connection con = ds.getConnection();
-            Statement statement = con.createStatement();
-           ResultSet rs = statement.executeQuery("SELECT COUNT(*) FROM empleado where EMAIL='"+login+"' and password='"+ password+"';");
+        String query = "SELECT COUNT(*) FROM empleado WHERE email=? AND password=? ";
+        DataSource dss = ConectorDataSource.getMysSQLDataSource();
 
+
+        try (Connection con = dss.getConnection();
+             PreparedStatement ps = con.prepareStatement(query);
         ){
-          rs.next();
-          if (rs.getInt(1) !=1)// el rs.getInt se le pasa por parametro la columna que quieres coger
-              return true;
-          else
-              return  false;
+            ps.setString(1,login);
+            ps.setString(2,password);
+            //ResultSet rs =
+
+
+
 
 
         } catch (SQLException e) {
-            e.printStackTrace();
             throw new RuntimeException(e);
         }
-
+        return auth;
     }
 }

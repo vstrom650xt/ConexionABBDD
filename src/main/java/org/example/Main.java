@@ -30,9 +30,7 @@ public class Main {
 
             System.out.println(connection.getClientInfo());
          //   System.out.println(connection.setTransactionIsolation());
-            System.out.println(connection.getMetaData().toString());
-            System.out.println(dataSource.getLoginTimeout());
-            System.out.println(dataSource.getParentLogger().toString());
+
         }catch (Exception e){
             e.printStackTrace();
         }

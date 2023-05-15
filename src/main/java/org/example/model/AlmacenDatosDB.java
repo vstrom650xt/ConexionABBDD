@@ -7,9 +7,11 @@ public ArrayList <Empleado> getEmpleados();
 
  public Empleado  getEmpleadoPorDNI(String DNI);
 
+ Empleado getEmpleadoPorEmail(String email);
+
  int updateEmpleado(Empleado empleado);
  int deleteEmpleado(Empleado empleado);
- Empleado addEmplado(Empleado empleado);
+ boolean addEmplado(Empleado empleado);
 
  boolean authenticate(String login, String password);
 }
