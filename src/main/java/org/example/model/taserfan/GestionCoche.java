@@ -4,10 +4,12 @@ import oracle.jdbc.OracleTypes;
 import org.example.model.ConectorDataSource;
 
 import javax.sql.DataSource;
+import javax.xml.crypto.Data;
 import java.sql.CallableStatement;
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.List;
+import java.util.concurrent.CountedCompleter;
 
 public class GestionCoche implements IGestionCoches {
 
@@ -56,6 +58,20 @@ public class GestionCoche implements IGestionCoches {
 
     @Override
     public void BorrarCoche(String matricula) throws SQLException {
+        DataSource ds = ConectorDataSource.getOracleDataSource();
+        String query = "{call GESTIONVEHICULOS.borrarCoche(?)}";
+
+        try(Connection con = ds.getConnection();
+            CallableStatement cs = con.prepareCall(query);
+        ){
+            cs.setString(1,matricula);
+            cs.execute();
+
+        }catch (SQLException e){
+            e.printStackTrace();
+        }
+
+
 
     }
 
@@ -66,6 +82,36 @@ public class GestionCoche implements IGestionCoches {
 
     @Override
     public void addCoche(Coche coche) throws SQLException {
+        DataSource ds = ConectorDataSource.getOracleDataSource();
+        String query ="{ call GESTIONVEHICULOS.insertarCoche(?,?,?,?,?,?,?,?,?,?,?)}";
+
+        try(Connection con = ds.getConnection();
+        CallableStatement callableStatement = con.prepareCall(query);
+        ){
+
+
+            callableStatement.setString(1, coche.getMatricula());
+            callableStatement.setDouble(2, coche.getPrecioHora());
+            callableStatement.setString(3, coche.getMarca());
+            callableStatement.setString(4, coche.getDescripcion());
+            callableStatement.setString(5, coche.getColor());
+            callableStatement.setInt(6, coche.getBateria());
+            callableStatement.setDate(7, coche.getFechaAdq());
+            callableStatement.setString(8, coche.getEstado());
+            callableStatement.setString(9, coche.getIdCarnet());
+            callableStatement.setShort(10, coche.getNumPlazas());
+            callableStatement.setShort(11, coche.getNumPuertas());
+
+
+            callableStatement.execute();
+
+        }catch (SQLException e){
+            e.printStackTrace();
+
+
+
+        }
+
 
     }
 
